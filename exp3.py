@@ -1,6 +1,7 @@
 from probability import distr, draw
 import math
 import random
+import pdb
 
 # exp3: int, (int, int -> float), float -> generator
 # perform the exp3 algorithm.
@@ -29,6 +30,9 @@ def exp3(numActions, reward, gamma, rewardMin = 0, rewardMax = 1):
 def simpleTest():
    numActions = 10
    numRounds = 10000
+
+   ## Debugger.
+   ## pdb.set_trace()
 
    biases = [1.0 / k for k in range(2,12)]
    rewardVector = [[1 if random.random() < bias else 0 for bias in biases] for _ in range(numRounds)]

@@ -1,0 +1,14 @@
+*.pyc
+dump
+R
+fit
+data
+
+*~
+
+*.tar
+*.zip
+*.tar.gz
+
+lsf.*
+*.swp
