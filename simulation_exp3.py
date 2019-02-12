@@ -49,8 +49,28 @@ class Player:
 
 
 # Exp3 using stochastic payoffs.
-def simulation(nPlayers=20, rewardBus=50, nCars=5, nRounds=30, gamma=0.07,
-               nActions=62, updateKnown=True, modPrint=1):
+def simulation(simIdx = 0, nPlayers=20, rewardBus=50, nCars=5, nRounds=30,
+               gamma=0.07, nActions=62, updateKnown=True, modPrint=1,
+               dump=False):
+
+    pdb.set_trace()
+    carLevel = 1.0 * nCars/nPlayers * 100    
+
+    if dump:
+        ## Matches names in behavioral dataset.
+        condition = "noinfo_car%d_p%d30" % (carLevel, rewardBus)    
+        header = "session,condition,car.level,payoff.bus,payoff.car,gamma"
+        header += "player,round,decision,departure.time,got.car,payoff\n"
+
+        prefixDump = '"%d","%s",%d,%d,%d,%.2f' % (simIdx, condition, carLevel,
+                                                rewardBus, rewardCar, gamma)
+            
+        f = open("results.csv", "w")
+        f.write(header)
+        
+        
+    prefix = "%03d - bus: %d\tcars: %02d\tgamma: %.2f\t" % \
+             (simIdx, rewardBus, nCars, gamma)
 
     players = list()
 
@@ -59,8 +79,6 @@ def simulation(nPlayers=20, rewardBus=50, nCars=5, nRounds=30, gamma=0.07,
 
     for r in range(nRounds):
         for p in range(nPlayers):
-
-            ## print('{0} {1}'.format(p, r))
 
             ## Create players for the first time.
             if (r == 0):
@@ -78,7 +96,9 @@ def simulation(nPlayers=20, rewardBus=50, nCars=5, nRounds=30, gamma=0.07,
             for player in players:
                 if player.lastAction == busActionIdx:
                     reward = rewardBus
+                    gotBus = 1
                 else:
+                    gotBus = 0
                     if updateKnown:
                         ## Update BUS anyway because
                         ## player knows its value.
@@ -86,16 +106,28 @@ def simulation(nPlayers=20, rewardBus=50, nCars=5, nRounds=30, gamma=0.07,
                
                     nCarers += 1
                     time = player.lastAction
-                    if time == None:
-                        pdb.set_trace()
+                    ## if time == None:
+                    ## pdb.set_trace()
 
                     totCarTime += time
                     if nCarers <= nCars:
                         reward = rewardCar + (slopeCar * time);
+                        gotCar = 1
                     else:
                         reward = rewardCar - (slopeCarMiss * time);
+                        gotCar = 0
 
+                if dump:
+                    if gotBus == 1:
+                        decision = "bus"
+                        time = 0
+                        gotCar = 0
+                    else:
+                        decision = "car"
                     
+                    f.write('%s,%d_%d,%d,"%s",%d,%d,%d\n' \
+                            % (prefixDump, simIdx, player.name, r,
+                               decision, player.lastAction, gotCar, reward))
 
             ## pdb.set_trace()
             ## print(reward)
@@ -103,21 +135,18 @@ def simulation(nPlayers=20, rewardBus=50, nCars=5, nRounds=30, gamma=0.07,
             ## Update reward action taken.
             player.exp3(reward)
 
-            ## Print every X.
-    if modPrint and r % modPrint == 0:
-        prefix = "bus: %d\tcars: %02d\tgamma: %.2f\tround: %d\t" % \
-                 (rewardBus, nCars, gamma, (r+1))
-        
+    avgTime = totCarTime / nCarers
+    
+    ## Print every X.
+    if modPrint and r % modPrint == 0:    
         if nCarers > 0:
-            print("%snCars: %d\ttime: %.2f" %
-                  (prefix, nCarers, (totCarTime/nCarers)))
+            print("%sround: %d\tnCars: %d\ttime: %.2f" %
+                  (prefix, (r+1), nCarers, avgTime))
         else:
-            print('round: %d\tnCars: 0')
+            print('round: %d\tnCars: 0' % (r+1))
 
 
-      ## print("nCars: %d\tmaxRegret: %.2f\tweights: (%s)" % (nCarers, (totCarTime/nCarers), ', '.join(["%.3f" % weight for weight in distr(weights)])))
-      ##pdb.set_trace()
-
+    return (nCarers, avgTime)
 
 
 if __name__ == "__main__":
