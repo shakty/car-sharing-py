@@ -53,13 +53,13 @@ def simulation(simIdx = 0, nPlayers=20, rewardBus=50, nCars=5, nRounds=30,
                gamma=0.07, nActions=62, updateKnown=True, modPrint=1,
                dump=False):
 
-    pdb.set_trace()
+    ## pdb.set_trace()
     carLevel = 1.0 * nCars/nPlayers * 100    
 
     if dump:
         ## Matches names in behavioral dataset.
         condition = "noinfo_car%d_p%d30" % (carLevel, rewardBus)    
-        header = "session,condition,car.level,payoff.bus,payoff.car,gamma"
+        header = "session,condition,car.level,payoff.bus,payoff.car,gamma,"
         header += "player,round,decision,departure.time,got.car,payoff\n"
 
         prefixDump = '"%d","%s",%d,%d,%d,%.2f' % (simIdx, condition, carLevel,
@@ -125,7 +125,7 @@ def simulation(simIdx = 0, nPlayers=20, rewardBus=50, nCars=5, nRounds=30,
                     else:
                         decision = "car"
                     
-                    f.write('%s,%d_%d,%d,"%s",%d,%d,%d\n' \
+                    f.write('%s,"%d_%d",%d,"%s",%d,%d,%d\n' \
                             % (prefixDump, simIdx, player.name, r,
                                decision, player.lastAction, gotCar, reward))
 
