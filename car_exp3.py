@@ -9,6 +9,9 @@ nCars = 5
 
 gamma = 0.07
 
+# Print results every modPrint rounds.
+modPrint = 1000
+
 # Actions 0-60 are CAR.
 nActions = 62
 busActionIdx = nActions - 1
@@ -100,10 +103,13 @@ def simulation():
          ## print(reward)
          player.exp3(reward)
 
-      if nCarers > 0:
-         print("round: %d\tnCars: %d\ttime: %.2f" % (r, nCarers, (totCarTime/nCarers)))
-      else:
-         print('round: %d\tnCars: 0')
+      ## Print every X.
+      if r % modPrint == 0:
+         if nCarers > 0:
+            print("round: %d\tnCars: %d\ttime: %.2f" % (r, nCarers, (totCarTime/nCarers)))
+         else:
+            print('round: %d\tnCars: 0')
+      
          
       ## print("nCars: %d\tmaxRegret: %.2f\tweights: (%s)" % (nCarers, (totCarTime/nCarers), ', '.join(["%.3f" % weight for weight in distr(weights)])))
    ##pdb.set_trace()
