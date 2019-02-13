@@ -9,8 +9,7 @@ updateKnown = True
 
 # Print results every modPrint rounds.
 modPrint = 1
-
-repetitions = 10
+repetitions = 15
 
 rounds = [30]
 players = [20]
@@ -21,6 +20,7 @@ busRewards = [50, 70]
 actions = [11]
 
 gammas = np.linspace(0.01, 0.3, 10)
+## gammas = np.linspace(0.3, 0.6, 10)
 
 outfile = "mean.csv"
 
@@ -28,10 +28,19 @@ dumpActions = True
 
 def sweep():
 
+
+    f = open("results.csv", "w")
+    header = '"session","condition","car.level","payoff.bus","payoff.car",'
+    header += '"gamma","player","round","decision","departure.time",'
+    header += '"got.car","payoff"\n'
+    f.write(header)
+    f.close()
+
     f = open(outfile, "w")
     writer = csv.writer(f, delimiter=',', quotechar='"',
                         quoting=csv.QUOTE_MINIMAL)
     writer.writerow(['avg.cars', 'avg.time'])
+
 
     simIdx = 0
     for p in players:
